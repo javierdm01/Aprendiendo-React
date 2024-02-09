@@ -1,18 +1,28 @@
-import './films.css'
+/* eslint-disable react/prop-types */
 
-function Films({img,title,year}) {
 
+
+export function Films({movies}) {
+    
   return (
     <>
-      <div className='films-box'>
-        <img src={img} alt="" />
-        <div className='info-film'>
-            <h3>{title}</h3>
-            <h4>{year}</h4>
-        </div>
-      </div>
+      <ul>
+        {
+            movies.map(movie=>(
+                <li key={movie.id}>
+                    <h3>{movie.title}</h3>
+                    <h4>{movie.year}</h4>
+                    <img src={movie.img} alt="" />
+                </li>
+            ))
+        }
+      </ul>
     </>
   )
 }
 
-export default Films
+export function NoFilmsResault(){
+    return (
+        <h3>No se encontraron peliculas para esta búsquedad.</h3>
+    )
+}
