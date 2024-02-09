@@ -1,0 +1,8 @@
+.film-box{
+    display: flex;
+    
+}
+.info-film{
+    display: flex;
+    flex-direction: column;
+}
