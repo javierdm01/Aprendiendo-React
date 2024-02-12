@@ -6,15 +6,15 @@ export function Films({movies}) {
     
   return (
     <>
-      <ul>
+      <ul className="movies">
         {
-            movies.map(movie=>(
-                <li key={movie.id}>
+            movies ? movies.map(movie=>(
+                <li key={movie.id} className="movie">
                     <h3>{movie.title}</h3>
                     <h4>{movie.year}</h4>
-                    <img src={movie.img} alt="" />
+                    <img src={movie.img} alt={movie.title} />
                 </li>
-            ))
+            )): ''
         }
       </ul>
     </>

@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import './App.css'
-//import { useRef } from 'react'
+import { useRef } from 'react'
 import { Films } from "./components/films"
 import { useFilms } from './services/hooks/useFilms'
 
@@ -20,17 +21,54 @@ const handleChange=(event)=>{
 <input onChange={handleChange} value={query} name="query">
  */
 
+function useSearch(){
+  const[search,updateSearch]= useState('')
+  const [error,setError]= useState(null)
+  const isFirstInput = useRef(true)
 
+  useEffect(() => {
+    if (isFirstInput.current) {
+      isFirstInput.current = search === ''
+      return
+    }
+
+    if (search === '') {
+      setError('No se puede buscar una película vacía')
+      return
+    }
+
+    if (search.match(/^\d+$/)) {
+      setError('No se puede buscar una película con un número')
+      return
+    }
+
+    if (search.length < 3) {
+      setError('La búsqueda debe tener al menos 3 caracteres')
+      return
+    }
+
+    setError(null)
+  }, [search])
+
+  return { search, updateSearch, error }
+
+}
 function App() {
-  const {film}= useFilms()
+  const {search, updateSearch,error}=useSearch()
+  const {film, getFilms}= useFilms({search})
 
 
   const handleSubmit=(event)=>{
     event.preventDefault()
-    const fields=Object.fromEntries( new FormData(event.target))
-    console.log(fields);
-   
+    console.log({search});
+    getFilms()
+    
   }
+  const handleChange=(event)=>{
+    const newQuery= event.target.value
+    updateSearch(newQuery)
+  }
+  
 
   return (
     <>
@@ -39,9 +77,10 @@ function App() {
           <h1>Buscador de Peliculas</h1>
           <form action="" className='form' onSubmit={handleSubmit}>
             <label htmlFor="films">Films Name</label>
-            <input  placeholder='Avengers,Star Wars, Matrix, Cars' type="text" name="query" id="query" />
+            <input  placeholder='Avengers,Star Wars, Matrix, Cars' type="text" name="query" id="query" value={search} onChange={handleChange}/>
             <button  type="submit">Buscar</button>
           </form>
+          {error && <p style={{color:'red'}}>{error}</p>}
         </header>
 
         <main>
