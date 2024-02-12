@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import './App.css'
 import { useRef } from 'react'
 import { Films } from "./components/films"
 import { useFilms } from './services/hooks/useFilms'
-
+import debounce from 'just-debounce-it'
 //Formularios con useRef()
 //No es lo suyo, tardamos menos haciendolo con FormData
 /*const inputRef= useRef()
@@ -58,6 +58,19 @@ function App() {
   const {search, updateSearch,error}=useSearch()
   const {film, getFilms, loading}= useFilms({search, sort})
 
+  /*Debounce lo que hace es añadir un tiempo de espera de en este caso
+  1s, para que cuando se deje de escribir 1s, se ejecute la funcion getFilms()
+
+  Añadimos el useCallback para que se ejecute solo una vez, porque al estar
+   dentro de la funcion se renderizaria tantas veces como cambiase el INPUT
+
+   Y con el callback hacemos que este se renderice solo una vez
+  */
+  const debouncedGetFilms=useCallback(debounce(search=>{
+    console.log('search',search);
+    getFilms({search})
+  },1000),[])
+
 
   const handleSubmit=(event)=>{
     event.preventDefault()
@@ -70,6 +83,7 @@ function App() {
   const handleChange=(event)=>{
     const newQuery= event.target.value
     updateSearch(newQuery)
+    debouncedGetFilms(newQuery)
   }
   
 
