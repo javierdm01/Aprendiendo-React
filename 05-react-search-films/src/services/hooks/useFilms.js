@@ -7,7 +7,6 @@ import { searchFilms } from '../movies'
 export const useFilms=({search, sort})=>{
     const [film, setFilm]= useState()
     const [loading,setLoading] = useState(false)
-    const [error,setError] =useState(null)
     const previousSearch= useRef(search)
     
 
@@ -21,12 +20,11 @@ export const useFilms=({search, sort})=>{
         if(search== previousSearch.current) return
        try {
         setLoading(true)
-        setError(null)
         previousSearch.current= search
+        //searchFilms() -> This function return data fetching to omdb api
         const newFilms= await searchFilms({search})
         setFilm(newFilms)
        } catch (error) {
-        setError(error.message)
         throw new Error('Can`t get films')
        }finally{
         //Se ejecuta siempre
