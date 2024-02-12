@@ -1,34 +1,49 @@
 
-import { useState } from 'react'
-
-import showMovies from '../../mocks/with-results.json'
-import withoutResults from '../../mocks/no-results.json'
+import { useRef, useState, useMemo, useCallback } from 'react'
+import { searchFilms } from '../movies'
 //import { useState } from "react"
-const API_KEY='4befc7eb';
 
-export const useFilms=({search})=>{
-    const [responseMovies, setResponseMovies]= useState([])
-    const film= responseMovies.Search
-    const mappedMovies= film!='' ? film?.map(movie =>({
-        id:movie.imdbID,
-        title:movie.Title,
-        year:movie.Year,
-        img:movie.Poster
-    })) : 'Error'
+
+export const useFilms=({search, sort})=>{
+    const [film, setFilm]= useState()
+    const [loading,setLoading] = useState(false)
+    const [error,setError] =useState(null)
+    const previousSearch= useRef(search)
     
-    const getFilms=()=>{
-        if (search) {
-            setResponseMovies(showMovies)
-            fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${search}`)
-            .then(res => res.json())
-            .then( json =>{
-                setResponseMovies(json)
-            })
-        }else{
-            setResponseMovies(withoutResults)
-        }
-    }
-    return {film:mappedMovies,getFilms}
+
+    /*useCallback se utiliza para memorizar funciones,
+    para que no se renderize la función cada vez
+    que se modifica 'search'
+    */
+
+    const getFilms=useCallback( 
+         async({search})=>{
+        if(search== previousSearch.current) return
+       try {
+        setLoading(true)
+        setError(null)
+        previousSearch.current= search
+        const newFilms= await searchFilms({search})
+        setFilm(newFilms)
+       } catch (error) {
+        setError(error.message)
+        throw new Error('Can`t get films')
+       }finally{
+        //Se ejecuta siempre
+        setLoading(false)
+       }
+       
+    },[])
+
+    /*useMemo se utiliza para memorizar varibales, 
+    y que no se renderice la página cada vez que modificamos
+    s'ort' */
+    const sortedFilms= useMemo(()=> {
+        return sort ?
+    [...film].sort((a,b) => a.year.localeCompare(b.year)) : film},[film,sort])
+    
+    
+    return {film : sortedFilms,getFilms, loading}
 }
 
 
