@@ -1,9 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import './filters.css' 
 export function Filters({changeFilters}) {
     const [minPrice, setMinPrice]= useState(30)
-    
+    const minPriceFilterId=useId()
+    const categoryFilterId=useId()
+
+
     const handleChangeMinPrice=(e)=>{
         setMinPrice(e.target.value)
         changeFilters(prevState =>({
@@ -22,10 +25,10 @@ export function Filters({changeFilters}) {
     return (
         <section className="filters">
             <div>
-                <label htmlFor='price'>Precio a partir de:</label>
+                <label htmlFor={minPriceFilterId}>Precio a partir de:</label>
                 <input
                 type='range'
-                id='price'
+                id={minPriceFilterId}
                 min='0'
                 max='1000'
                 onChange={handleChangeMinPrice}
@@ -33,8 +36,8 @@ export function Filters({changeFilters}) {
                 <span>${minPrice}</span>
             </div>        
             <div>
-                <label htmlFor='categoria'>Categoría</label>
-                <select id='categoria' onChange={handleChangeCategory} >
+                <label htmlFor={categoryFilterId}>Categoría</label>
+                <select id={categoryFilterId} onChange={handleChangeCategory} >
                     <option value='all'>Todas</option>
                     <option value='laptops'>Portátiles</option>
                     <option value='smartphones'>Celulares</option>
