@@ -1,12 +1,12 @@
+/* eslint-disable react/prop-types */
+import { useFilters } from '../hooks/useFilter'
 import './footer.css'
 
 export function Footer () {
-  // const { filters } = useFilters()
-
+  const { filters } = useFilters()
   return (
     <footer className='footer'>
-      <h4>Prueba técnica de React ⚛️ － <span>@javierdm01</span></h4>
-      <h5>Shopping Cart con useContext & useReducer</h5>
+      <h4>{JSON.stringify(filters)}</h4>
     </footer>
   )
 }

@@ -1,22 +1,22 @@
 /* eslint-disable react/prop-types */
-import { useState, useId } from 'react'
+import {  useId } from 'react'
 import './filters.css' 
-export function Filters({changeFilters}) {
-    const [minPrice, setMinPrice]= useState(30)
+import { useFilters } from '../hooks/useFilter'
+export function Filters() {
+    const {filters,setFilters}=useFilters();
     const minPriceFilterId=useId()
     const categoryFilterId=useId()
 
 
     const handleChangeMinPrice=(e)=>{
-        setMinPrice(e.target.value)
-        changeFilters(prevState =>({
+        setFilters(prevState =>({
             ...prevState,
             minPrice: e.target.value
         }))
     }
 
     const handleChangeCategory=(e)=>{
-        changeFilters(prevState =>({
+        setFilters(prevState =>({
             ...prevState,
             category: e.target.value
         }))
@@ -31,9 +31,10 @@ export function Filters({changeFilters}) {
                 id={minPriceFilterId}
                 min='0'
                 max='1000'
+                value={filters.minPrice}
                 onChange={handleChangeMinPrice}
                 />
-                <span>${minPrice}</span>
+                <span>${filters.minPrice}</span>
             </div>        
             <div>
                 <label htmlFor={categoryFilterId}>Categoría</label>
