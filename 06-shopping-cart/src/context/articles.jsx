@@ -6,6 +6,16 @@ import { createContext, useReducer, useState } from "react";
 
 export const ArticleContext= createContext()
 
+
+/*El Método useReducer() se utiliza para cuando tenemos muchas
+funciones para cambiar de estado.
+Se utiliza el useReducer para simplificar la forma de llamar a distintos
+cambios de estado. Y es preferible hacerlo así en estas ocasiones, ya que 
+a la hora de testear o encontrar fallas es mas sencillo
+
+Es decir, realmente las siguientes funciones es como funciona un estado por detras
+
+Esta función consta de un estado inicial, y una fucnion reducer con*/
 const initialState=[]
 const reducer=(state,action) =>{
     const {type: actionType, payload: actionPayload}= action
