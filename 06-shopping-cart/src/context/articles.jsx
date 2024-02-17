@@ -1,42 +1,60 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { createContext, useState } from "react";
+import { createContext, useReducer, useState } from "react";
 
 
 
 export const ArticleContext= createContext()
 
+const initialState=[]
+const reducer=(state,action) =>{
+    const {type: actionType, payload: actionPayload}= action
+    switch (actionType) {
+        case 'ADD_TO_CART':{
+            const{id} =actionPayload
+            const productInCart= state.findIndex(item=> item.id== id)
+
+            if(productInCart >= 0){
+                //una forma de sumar uno a la cantidad con struturedClone()
+                const newCart= structuredClone(state)
+                newCart[productInCart].quantity +=1
+                return newCart
+            }
+            return [
+                ...state, {...actionPayload, quantity:1}
+            ]
+        }   
+        case 'REMOVE_FROM_CART':{
+            const {id} = actionPayload
+            return state.filter(item => item.id !== id)
+        }
+        case 'CLEAR_CART':{
+            return initialState
+        }
+
+        default:
+            break;
+    }
+    return state
+}
+
 
 export function ArticleProviders({children}) {
-    const [articles,setArticles]= useState([])
+    const [state,dispatch] =useReducer(reducer, initialState)
 
-    const addToCart= product=>{
-        //Primero Comprobar Si esta en el carrito
-        const productInCart= articles.findIndex(item=> item.id== product.id)
+    const addToCart= product => dispatch({type: 'ADD_TO_CART', payload:product})
 
-        if(productInCart >= 0){
-            //una forma de sumar uno a la cantidad con struturedClone()
-            const newCart= structuredClone(articles)
-            newCart[productInCart].quantity +=1
-            return setArticles(newCart)
-        }
-        setArticles( prevState=>([
-            ...prevState,{
-                ...product,
-                quantity:1
-            }
-        ]))
-    }
-    
-    const clearCart= () =>{
-        setArticles([])
-    }
-    const removeFromCart= product =>{
-        setArticles(prevState=> prevState.filter(item => item.id != product.id))
-    }
+    const removeFromCart=product => dispatch({ type: 'REMOVE_FROM_CART', payload:product})
+
+    const clearCart=product => dispatch({ type: 'CLEAR_CART'})
 
     return(
-        <ArticleContext.Provider value={{articles,addToCart,clearCart,removeFromCart}}>
+        <ArticleContext.Provider value={{
+            articles: state,
+            addToCart,
+            removeFromCart,
+            clearCart
+        }}>
             {children}
         </ArticleContext.Provider>
     )
